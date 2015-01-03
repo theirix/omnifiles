@@ -1,0 +1,5 @@
+development:
+  storage_dir: /var/lib/omnifiles/storage
+  db: /var/lib/omnifiles/omnifiles.sqlite3
+  auth_opaque: alongopaquekey
+  auth_password: secret

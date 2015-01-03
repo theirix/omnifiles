@@ -1,0 +1,19 @@
+!!!
+%html
+  %head
+    %title OmniFiles statistics
+    = css :application
+  %body
+    %h1 Statistics for #{@shortened}
+    #container
+      .left
+        %p URL:
+        %p Original name:
+        %p Access count:
+        %p MIME:
+      .right
+        %p
+          %a(href=@url) #{@url}
+        %p=@original_filename
+        %p=@access_count
+        %p=@mime
