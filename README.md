@@ -1,5 +1,9 @@
 # OmniFiles
 
+[![Gem Version](https://img.shields.io/gem/v/omnifiles.svg)](https://rubygems.org/gems/omnifiles)
+[![Code Climate](https://codeclimate.com/github/theirix/omnifiles/badges/gpa.svg)](https://codeclimate.com/github/theirix/omnifiles)
+[![Dependency Status](https://gemnasium.com/theirix/omnifiles.svg)](https://gemnasium.com/theirix/omnifiles)
+
 File storage and shortener server.
 
 OmniFiles is built with Sinatra and Rack and uses an sqlite database to store shortened
