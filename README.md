@@ -3,6 +3,7 @@
 [![Gem Version](https://img.shields.io/gem/v/omnifiles.svg)](https://rubygems.org/gems/omnifiles)
 [![Code Climate](https://codeclimate.com/github/theirix/omnifiles/badges/gpa.svg)](https://codeclimate.com/github/theirix/omnifiles)
 [![Dependency Status](https://gemnasium.com/theirix/omnifiles.svg)](https://gemnasium.com/theirix/omnifiles)
+[![Build Status](https://travis-ci.org/theirix/omnifiles.svg?branch=master)](https://travis-ci.org/theirix/omnifiles)
 
 File storage and shortener server.
 
