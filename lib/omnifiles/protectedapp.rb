@@ -3,6 +3,7 @@
 require 'sinatra'
 require 'filemagic'
 require 'uri'
+require 'tempfile'
 require 'settingslogic'
 require 'haml'
 require 'rack'
@@ -42,7 +43,11 @@ module OmniFiles
       halt 404, "File not found" unless data
 
       @url = url('/f/'+name)
-      @original_filename = URI.unescape data['original_filename']
+      if data['original_filename']
+        @original_filename = URI.unescape data['original_filename']
+      else
+        @original_filename = "<i>Not provided</i>"
+      end
       @access_count = data['accessed']
       @mime = data['mime']
       @shortened = name
@@ -50,39 +55,64 @@ module OmniFiles
       haml :stat
     end
 
+    # POST handler with form/body handling
     def store_file
       logger.info "Route POST store"
       begin
         req = Rack::Request.new(env)
-        post_file = req.POST['file']
-        original_filename = URI.escape(File.basename(post_file[:filename]))
+        if !req.POST || req.POST == {}
+          logger.info "Saving POST body to temp file"
 
-        temp_file = post_file[:tempfile]
+          original_filename = nil
 
-        # Determine file mime and desired url
-        mime = FileMagic.mime.file temp_file.path
+          # Make a temp file with body content
+          temp_file = Tempfile.new("omnifiles-post-")
+          File.open(temp_file.path, 'wb') do |ftemp|
+            IO.copy_stream(req.body, ftemp)
+          end
+        else
+          logger.info "Using POST form"
 
-        # Short URL is composed from escaped filename from form, mime type and leading file bytes
-        shortened = @storage.shorten_file temp_file.path, original_filename, mime
+          # Use a Rack provided file with content
+          post_file = req.POST['file']
+          original_filename = URI.escape(File.basename(post_file[:filename]))
 
-        # Save file to storage
-        target_path = File.join(Settings.storage_dir, shortened)
-        raise "Not so unique id #{shortened}" if File.exists? target_path
-        FileUtils.cp temp_file.path, target_path
+          temp_file = post_file[:tempfile]
+        end
 
-        # Put record to storage
-        @storage.put_file shortened, original_filename, mime
-        short_url = url('/f/'+shortened)
+        store_with_file temp_file.path, original_filename
 
-        logger.info "Stored file #{target_path} to shortened #{shortened}, magic '#{mime}'"
-
-        short_url
       ensure
         if temp_file
           temp_file.close
           temp_file.unlink
         end
       end
+    end
+
+    # Save temporary file to storage
+    def store_with_file path, original_filename
+      # Take a sample of file
+      sample = Digest::MD5.hexdigest(IO.binread(path, 0x100))
+
+      # Determine file mime and desired url
+      mime = FileMagic.mime.file path
+
+      # Short URL is composed from escaped filename from form, mime type and leading file bytes
+      shortened = @storage.shorten_file sample, original_filename, mime
+
+      # Save file to storage
+      target_path = File.join(Settings.storage_dir, shortened)
+      raise "Not so unique id #{shortened}" if File.exists? target_path
+      FileUtils.cp path, target_path
+
+      # Put record to storage
+      @storage.put_file shortened, original_filename, mime
+      short_url = url('/f/'+shortened)
+
+      logger.info "Stored file #{target_path} to shortened #{shortened}, magic '#{mime}'"
+
+      short_url
     end
 
   end

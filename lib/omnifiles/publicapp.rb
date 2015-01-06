@@ -30,7 +30,9 @@ module OmniFiles
 
       logger.info "Data #{data}, file #{path}, was at #{filename}"
 
-      headers 'X-Original-Filename' => filename
+      if filename && !filename.empty?
+        headers 'X-Original-Filename' => filename
+      end
       send_file path, :type => mime
     end
 

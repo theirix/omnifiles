@@ -18,10 +18,11 @@ module OmniFiles
     end
 
     # returns shortened url
-    def shorten_file path, filename, mime
+    def shorten_file sample, filename, mime
       counter = 0
       begin
-        hashing = [filename, mime, Digest::MD5.hexdigest(IO.binread(path, 0x100)), counter.to_s].join '|'
+        # filename can be null
+        hashing = [filename.to_s, mime, sample, counter.to_s].join '|'
         @logger.info "Hashing value " + hashing
         shortened = @shortener.shorten hashing
         counter += 1

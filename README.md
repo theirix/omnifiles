@@ -19,15 +19,14 @@ OmniFiles is a Rack application and can be used as a gem or as a server in local
 
         gem install omnifiles
 
-2. Create a settings file `/path/to/settings.yaml` by copying `config/settings.yaml.example`.
-Location of file must be specified in env variable `OMNIFILES_SETTINGS`.
+2. Point an env variable `OMNIFILES_SETTINGS` to location of a settings file `/path/to/settings.yaml` (see Configurarion).
 
 3. Start an app as a Thin server
 
         OMNIFILES_SETTINGS=/path/to/settings.yaml omnifiles
 Of course, you can provide any additional Thin options:
 
-        OMNIFILES_SETTINGS=/path/to/settings.yaml omnifiles -l /var/log/omnifiles.log -P /var/run/omnifiles.pid -d
+        OMNIFILES_SETTINGS=/path/to/settings.yaml omnifiles -p 3000
 
 ## As a rack app
 
@@ -39,19 +38,35 @@ OmniFiles can be started using `config.ru` with you favourite Rack server.
 
         bundle install
 
-3. Create a settings file `/path/to/settings.yaml` by copying `config/settings.yaml.example`.
-Location of file must be specified in env variable `OMNIFILES_SETTINGS`.
+3. Point an env variable `OMNIFILES_SETTINGS` to location of a settings file `/path/to/settings.yaml` (see Configurarion).
 
 4. Start Rack app
 
         rackup
 
+## Configuration
+
+Settings file template can be found at `config/settings.yaml.example`.
+
+If you prefer production Rack environment, please use `production` instead of `development` section in the config.
+Also specify `-E production` at `omnifiles` (actially Thin) command line.
+
+If you prefer to run omnifiles as a daemon, don't forget to set log and pid location. Author prefer to follow XDG and place all the files at the `~/.local/share/omnifiles`, including the database. So one can use following command line:
+
+    OMNIFILES_SETTINGS=$HOME/.local/share/omnifiles/settings.yaml omnifiles -d -a 127.0.0.1 -p 3000 \
+      -l $HOME/.local/share/omnifiles/omnifiles.log \
+      -P $HOME/.local/share/omnifiles/omnifiles.pid
+
 ## Usage
 
 1. Storing files.
-OmniFiles can store files by issuing an authenticated POST request
+OmniFiles can store files by issuing an authenticated POST form request:
 
         % curl --digest -u user:secret -F "file=@/path/to/file.jpg" 'http://localhost:3000/store'
+        http://localhost:3000/f/e63A12
+Or you can post a file just as a binary POST data:
+
+        % curl --digest -u user:secret -H "Content-Type: application/octet-stream" --data-binary "@/path/to/file.jpg" 'http://localhost:3000/store'
         http://localhost:3000/f/e63A12
 OmniFiles returns a short url in response so you can just issue following command to save URL in clipboard
 
@@ -73,4 +88,4 @@ using web browser or curl
 
 ## License information
 
-Please consult with the LICENSE.txt for license information.
+Please consult with the LICENSE.txt for license information. It is MIT by the way.
