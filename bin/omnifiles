@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
 
 require 'thin'
 
 ARGV.unshift File.expand_path(File.join(File.dirname(File.expand_path(__FILE__)),"..","config.ru"))
 ARGV.unshift '-R'
-ARGV.unshift 'start'
 Thin::Runner.new(ARGV).run!

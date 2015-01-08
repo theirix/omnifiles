@@ -11,7 +11,7 @@ urls and statistics.
 
 ## Installation
 
-OmniFiles is a Rack application and can be used as a gem or as a server in local directory.
+OmniFiles is a Sinatra/Rack application and can be used as a gem or as a server in local directory.
 
 ### As a gem
 
@@ -24,9 +24,13 @@ OmniFiles is a Rack application and can be used as a gem or as a server in local
 3. Start an app as a Thin server
 
         OMNIFILES_SETTINGS=/path/to/settings.yaml omnifiles
-Of course, you can provide any additional Thin options:
+Of course, you can provide any additional Thin options at command line:
 
         OMNIFILES_SETTINGS=/path/to/settings.yaml omnifiles -p 3000
+Or at config file (see Thin documentation):
+
+        OMNIFILES_SETTINGS=/path/to/settings.yaml omnifiles -C /path/to/thin.yaml
+
 
 ## As a rack app
 
@@ -53,9 +57,15 @@ Also specify `-E production` at `omnifiles` (actially Thin) command line.
 
 If you prefer to run omnifiles as a daemon, don't forget to set log and pid location. Author prefer to follow XDG and place all the files at the `~/.local/share/omnifiles`, including the database. So one can use following command line:
 
-    OMNIFILES_SETTINGS=$HOME/.local/share/omnifiles/settings.yaml omnifiles -d -a 127.0.0.1 -p 3000 \
+    OMNIFILES_SETTINGS=$HOME/.local/share/omnifiles/settings.yaml omnifiles start -d -a 127.0.0.1 -p 3000 \
       -l $HOME/.local/share/omnifiles/omnifiles.log \
       -P $HOME/.local/share/omnifiles/omnifiles.pid
+
+Complex Thin options can be hidden in Thin config.yaml file:
+
+    OMNIFILES_SETTINGS=$HOME/.local/share/omnifiles/settings.yaml omnifiles start -C $HOME/.local/share/omnifiles/thin.yaml
+
+Note that OmniFiles and Thin configs are two distinct configs.
 
 ## Usage
 
