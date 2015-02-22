@@ -17,7 +17,7 @@ module OmniFiles
 
       halt 500, "Wrong URL" if name != BaseApp.sanitize(name)
 
-      data = @storage.get_file name
+      data = @storage.get_file_and_bump name
       logger.info "Data #{data}"
       halt 404, "File not found" unless data
 
@@ -28,7 +28,7 @@ module OmniFiles
       mime = data['mime']
       mime = 'application/octet-stream' unless mime && mime != ''
 
-      logger.info "Data #{data}, file #{path}, was at #{filename}"
+      logger.info "File '#{path}' was named '#{filename}'"
 
       if filename && !filename.empty?
         headers 'X-Original-Filename' => filename

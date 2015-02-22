@@ -6,7 +6,7 @@
 
 File storage and shortener server.
 
-OmniFiles is built with Sinatra and Rack and uses an sqlite database to store shortened
+OmniFiles is built with Sinatra and Rack and uses an Mongo database to store shortened
 urls and statistics.
 
 ## Installation

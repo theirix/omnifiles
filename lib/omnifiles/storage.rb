@@ -2,19 +2,23 @@
 
 require 'rubygems'
 require 'digest/md5'
-require 'sqlite3'
+require 'bson'
+require 'mongo'
 
 module OmniFiles
 
-  class Storage
+class Storage
+    def initialize mongo_host, mongo_port, mongo_name, logger
+        @logger = logger
+        client = Mongo::MongoClient.new(mongo_host, mongo_port)
+        raise 'No mongo found' unless client
+        db = client.db(mongo_name)
+        raise 'No mongo db found' unless db
+        @logger.info "Mongo collections " + db.collection_names.join(',')
+        @coll = db.collection('files')
+        raise 'Cannot use collection' unless @coll
 
-    def initialize db_filename, logger
-      @logger = logger
-      @db = SQLite3::Database.new(db_filename, :results_as_hash => true)
-      if (@db.table_info('files') or []) == []
-        Storage.create_schema @db
-      end
-      @shortener = UrlShortener.new(SecureRandom.hex(8))
+        @shortener = UrlShortener.new(SecureRandom.hex(8))
     end
 
     # returns shortened url
@@ -26,37 +30,35 @@ module OmniFiles
         @logger.info "Hashing value " + hashing
         shortened = @shortener.shorten hashing
         counter += 1
-        unique_id = @db.get_first_row("SELECT COUNT(shortened) FROM files WHERE shortened = ?", [shortened])[0] == 0
-      end until unique_id
+        same_shortened = @coll.find_one({shortened: shortened}, :fields => [ "_id" ])
+        @logger.info same_shortened
+        raise 'Something goes wrong' if counter > 100
+      end while same_shortened
       shortened
     end
 
     def put_file shortened, filename, mime
-      @db.execute("INSERT INTO files (original_filename, shortened, mime, accessed)"+
-        "VALUES ( ?, ?, ?, 0 )",
-        [filename, shortened, mime])
+        doc = { original_filename: filename, shortened: shortened, mime: mime,
+                accessed: { count: 0 }, created: { time: Time.now.utc } }
+        res = @coll.insert(doc)
+        @logger.info "mongo put result: #{res}"
     end
 
     # returns full url
     def get_file shortened
-      data = @db.get_first_row("SELECT * FROM files WHERE shortened = ?", [shortened])
-      if data
-        @db.execute("UPDATE files SET accessed = accessed + 1 WHERE shortened = ?", [shortened])
-      end
-      data
+        @coll.find_one({shortened: shortened})
     end
 
-  private
-    def self.create_schema db
-      db.execute <<-SQL
-      CREATE TABLE files (
-        shortened TEXT NOT NULL,
-        original_filename TEXT,
-        mime TEXT,
-        accessed INTEGER);
-      CREATE INDEX shortened_INDEX ON files (shortened);
-      SQL
+    # returns full url and update statistics
+    def get_file_and_bump shortened
+        data = @coll.find_one({shortened: shortened})
+        return nil unless data
+        @coll.update({ _id: data["_id"]}, {
+            "$inc" =>  { "accessed.count" => 1 },
+            "$set" => { "accessed.time" => Time.now.utc } })
+        @coll.find_one({ _id: data["_id"]})
     end
-  end
+
+end
 
 end

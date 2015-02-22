@@ -34,6 +34,14 @@ module OmniFiles
       store_file
     end
 
+    def format_time_str time
+      if time
+        time.localtime.to_s
+      else
+        '<i>Not yet</i>'
+      end
+    end
+
     get '/stat/:name' do |name|
       logger.info "Route GET stat #{name}"
 
@@ -48,7 +56,9 @@ module OmniFiles
       else
         @original_filename = "<i>Not provided</i>"
       end
-      @access_count = data['accessed']
+      @access_count = data['accessed']['count']
+      @access_time = format_time_str data['accessed']['time']
+      @created_time = format_time_str data['created']['time']
       @mime = data['mime']
       @shortened = name
 

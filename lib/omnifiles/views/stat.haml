@@ -10,10 +10,14 @@
         %p URL:
         %p Original name:
         %p Access count:
+        %p Accessed at:
+        %p Created at:
         %p MIME:
       .right
         %p
           %a(href=@url) #{@url}
         %p=@original_filename
         %p=@access_count
+        %p=@access_time
+        %p=@created_time
         %p=@mime

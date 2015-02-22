@@ -1,5 +1,8 @@
 development:
   storage_dir: storage
-  db: omnifiles.sqlite3
+  db:
+    host: localhost
+    port: 27017
+    name: omnifiles
   auth_opaque: alongopaquekey
   auth_password: secret

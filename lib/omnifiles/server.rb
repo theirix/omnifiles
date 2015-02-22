@@ -16,8 +16,7 @@ module OmniFiles
     before do
       logger.info "Fired " + self.class.to_s
       FileUtils.mkdir_p(Settings.storage_dir)
-      FileUtils.mkdir_p(File.dirname(Settings.db))
-      @storage = Storage.new Settings.db, logger
+      @storage = Storage.new Settings.db.host, Settings.db.port, Settings.db.name, logger
     end
 
     def self.sanitize s
