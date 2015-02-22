@@ -2,7 +2,9 @@
 %html
   %head
     %title OmniFiles statistics
-    = css :application
+    :css
+        .left { width: 20%; float: left; }
+        .right { overflow: auto; }
   %body
     %h1 Statistics for #{@shortened}
     #container

@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require 'sinatra'
-require 'sinatra/assetpack'
 require 'settingslogic'
 require 'rack'
 

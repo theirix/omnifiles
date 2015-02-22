@@ -13,14 +13,6 @@ module OmniFiles
   # Protected app for POST request
   class ProtectedApp < BaseApp
 
-    register Sinatra::AssetPack
-    assets do
-      css :application, [
-        '/css/app.css'
-      ]
-    end
-
-
     use Rack::Auth::Digest::MD5, "OmniFiles Realm", Settings.auth_opaque do |_|
       Settings.auth_password
     end
