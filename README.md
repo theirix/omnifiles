@@ -91,10 +91,14 @@ Header `X-Original-Filename` contains escaped original filename.
 
 3. Viewing statistics.
 OmniFiles provides file access statistics using authenticated requests.
-Visit an url
+Visit an url using web browser or curl.
 
         http://localhost:3000/stat/e63A12
-using web browser or curl
+
+3. Control panel.
+Viewing and deleting stored files can be performed at control panel:
+
+		http://localhost:3000/stat
 
 ## License information
 

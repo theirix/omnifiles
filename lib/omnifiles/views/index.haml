@@ -116,7 +116,7 @@
               %td=doc[:created_time]
               %td=doc[:mime]
               %td
-                %form{ :action => "/delete/#{doc[:shortened]}", :method => 'post' }
+                %form{ :action => "/stat/#{doc[:shortened]}/delete", :method => 'post' }
                   %button.delete{ :type => 'submit'}Delete
 
     %p

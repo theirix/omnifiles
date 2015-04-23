@@ -73,7 +73,7 @@ module OmniFiles
 
     # POST to delete file
     # cannot remap methods
-    post '/delete/:name' do |name|
+    post '/stat/:name/delete' do |name|
       logger.info "Route POST to delete file #{name}"
 
       target_path = File.join(Settings.storage_dir, name)
@@ -89,11 +89,11 @@ module OmniFiles
         flash[:error] = "Cannot delete file #{name} from mongo"
       end
 
-      redirect to('/')
+      redirect to('/stat')
     end
 
     # GET index
-    get '/' do
+    get '/stat' do
         logger.info "Route GET index"
 
         @hdata = []
