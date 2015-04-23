@@ -6,3 +6,4 @@ development:
     name: omnifiles
   auth_opaque: alongopaquekey
   auth_password: secret
+  session_secret: SECRET

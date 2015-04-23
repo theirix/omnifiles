@@ -26,5 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "bson_ext", "~> 1.12.0"
   spec.add_runtime_dependency "haml", "~> 4.0.0"
   spec.add_runtime_dependency "settingslogic", "~> 2.0.0"
+  spec.add_runtime_dependency "psych", "~> 2.0.0"
   spec.add_runtime_dependency "thin", "~> 1.6.0"
+  spec.add_runtime_dependency "sinatra-flash", "~> 0.3.0"
 end

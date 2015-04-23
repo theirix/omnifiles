@@ -3,10 +3,17 @@
   %head
     %title OmniFiles statistics
     :css
-        .left { width: 20%; float: left; }
-        .right { overflow: auto; }
+      body {
+        padding: 5px;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      }
+
+      .left { width: 20%; float: left; }
+
+      .right { overflow: auto; }
+
   %body
-    %h1 Statistics for #{@shortened}
+    %h1 Statistics for #{@hdata[:shortened]}
     #container
       .left
         %p URL:
@@ -17,9 +24,12 @@
         %p MIME:
       .right
         %p
-          %a(href=@url) #{@url}
-        %p=@original_filename
-        %p=@access_count
-        %p=@access_time
-        %p=@created_time
-        %p=@mime
+          %a{href: @hdata[:url]} #{@hdata[:url]}
+        %p=@hdata[:original_filename]
+        %p=@hdata[:access_count]
+        %p=@hdata[:access_time]
+        %p=@hdata[:created_time]
+        %p=@hdata[:mime]
+
+    %p
+      =styled_flash

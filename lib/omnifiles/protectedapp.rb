@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'sinatra'
+require 'sinatra/flash'
 require 'filemagic'
 require 'uri'
 require 'tempfile'
@@ -17,6 +18,11 @@ module OmniFiles
       Settings.auth_password
     end
 
+    enable :sessions
+    set :session_secret, Settings.session_secret
+
+    register Sinatra::Flash
+
     # POST a file
     post '/store/' do
       store_file
@@ -24,6 +30,10 @@ module OmniFiles
 
     post '/store' do
       store_file
+    end
+
+    def make_visible_filename filename
+        filename ? URI.unescape(filename) : "<i>Not provided</i>"
     end
 
     def format_time_str time
@@ -34,6 +44,19 @@ module OmniFiles
       end
     end
 
+    def make_haml_data_from_doc doc
+      {
+        shortened: doc['shortened'],
+        url: url('/f/' + doc['shortened']),
+        original_filename: make_visible_filename(doc['original_filename']),
+        mime: doc['mime'],
+        access_time: format_time_str(doc['accessed']['time']),
+        created_time: format_time_str(doc['created']['time']),
+        access_count: doc['accessed']['count']
+      }
+    end
+
+    # GET stat of file
     get '/stat/:name' do |name|
       logger.info "Route GET stat #{name}"
 
@@ -42,19 +65,43 @@ module OmniFiles
       data = @storage.get_file name
       halt 404, "File not found" unless data
 
-      @url = url('/f/'+name)
-      if data['original_filename']
-        @original_filename = URI.unescape data['original_filename']
-      else
-        @original_filename = "<i>Not provided</i>"
-      end
-      @access_count = data['accessed']['count']
-      @access_time = format_time_str data['accessed']['time']
-      @created_time = format_time_str data['created']['time']
-      @mime = data['mime']
-      @shortened = name
+      @hdata = make_haml_data_from_doc data
+      logger.info @hdata.inspect
 
       haml :stat
+    end
+
+    # POST to delete file
+    # cannot remap methods
+    post '/delete/:name' do |name|
+      logger.info "Route POST to delete file #{name}"
+
+      target_path = File.join(Settings.storage_dir, name)
+
+      if @storage.delete_file(name)
+        if File.file?(target_path)
+          FileUtils.rm target_path
+          flash[:notice] = "Successfully deleted file #{name}"
+        else
+          flash[:error] = "Cannot delete file #{name} from disk"
+        end
+      else
+        flash[:error] = "Cannot delete file #{name} from mongo"
+      end
+
+      redirect to('/')
+    end
+
+    # GET index
+    get '/' do
+        logger.info "Route GET index"
+
+        @hdata = []
+        @storage.enumerate_docs do |doc|
+            @hdata << make_haml_data_from_doc(doc)
+        end
+
+        haml :index
     end
 
     # POST handler with form/body handling

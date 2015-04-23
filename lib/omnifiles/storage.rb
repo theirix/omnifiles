@@ -18,7 +18,7 @@ class Storage
         @coll = db.collection('files')
         raise 'Cannot use collection' unless @coll
 
-        @shortener = UrlShortener.new(SecureRandom.hex(8))
+        @shortener = UrlShortener.new(SecureRandom.hex(8), 1)
     end
 
     # returns shortened url
@@ -30,8 +30,8 @@ class Storage
         @logger.info "Hashing value " + hashing
         shortened = @shortener.shorten hashing
         counter += 1
+        next if shortened.size < 5
         same_shortened = @coll.find_one({shortened: shortened}, :fields => [ "_id" ])
-        @logger.info same_shortened
         raise 'Something goes wrong' if counter > 100
       end while same_shortened
       shortened
@@ -57,6 +57,15 @@ class Storage
             "$inc" =>  { "accessed.count" => 1 },
             "$set" => { "accessed.time" => Time.now.utc } })
         @coll.find_one({ _id: data["_id"]})
+    end
+
+    def delete_file shortened
+        resp = @coll.remove({shortened: shortened})
+        resp['ok'] && resp['n'] > 0
+    end
+
+    def enumerate_docs
+        @coll.find.each { |doc| yield doc }
     end
 
 end

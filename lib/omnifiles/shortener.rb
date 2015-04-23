@@ -6,7 +6,7 @@ require 'digest/md5'
 module OmniFiles
 
   class UrlShortener
-    def initialize salt, bytes_used=1
+    def initialize salt, bytes_used
       @salt = salt
       @bytes_used = bytes_used
       # base62
