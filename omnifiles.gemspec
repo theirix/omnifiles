@@ -29,4 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "psych", "~> 2.0.0"
   spec.add_runtime_dependency "thin", "~> 1.6.0"
   spec.add_runtime_dependency "sinatra-flash", "~> 0.3"
+  spec.add_runtime_dependency "sprockets-helpers", "~> 1.2"
+  spec.add_runtime_dependency "sass", "~> 3.4"
 end

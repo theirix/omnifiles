@@ -9,6 +9,8 @@ require 'settingslogic'
 require 'haml'
 require 'tilt/haml'
 require 'rack'
+require 'sprockets'
+require 'sprockets-helpers'
 
 module OmniFiles
 
@@ -18,6 +20,21 @@ module OmniFiles
     use Rack::Auth::Digest::MD5, "OmniFiles Realm", Settings.auth_opaque do |_|
       Settings.auth_password
     end
+
+    set :sprockets, Sprockets::Environment.new(root)
+    set :assets_prefix, '/omnifiles-assets'
+
+    configure do
+      Sprockets::Helpers.configure do |config|
+        config.environment = sprockets
+        config.prefix      = assets_prefix
+        config.digest      = true
+      end
+      sprockets.append_path 'assets/stylesheets'
+      sprockets.css_compressor = :scss
+    end
+
+    helpers Sprockets::Helpers
 
     enable :sessions
     set :session_secret, Settings.session_secret

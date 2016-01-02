@@ -2,16 +2,7 @@
 %html
   %head
     %title OmniFiles statistics
-    :css
-      body {
-        padding: 5px;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      }
-
-      .left { width: 20%; float: left; }
-
-      .right { overflow: auto; }
-
+    =stylesheet_tag 'application'
   %body
     %h1 Statistics for #{@hdata[:shortened]}
     #container
