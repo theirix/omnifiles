@@ -23,7 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "sinatra", "~> 1.4"
   spec.add_runtime_dependency "ruby-filemagic", "~> 0.7"
   spec.add_runtime_dependency "mongo", "~> 2.2"
-  spec.add_runtime_dependency "bson_ext", "~> 1.5"
   spec.add_runtime_dependency "haml", "~> 4.0.0"
   spec.add_runtime_dependency "settingslogic", "~> 2"
   spec.add_runtime_dependency "psych", "~> 2.0.0"
