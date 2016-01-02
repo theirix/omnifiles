@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'sinatra'
+require 'sinatra/base'
 require 'settingslogic'
 require 'rack'
 

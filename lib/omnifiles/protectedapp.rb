@@ -1,12 +1,13 @@
 # encoding: utf-8
 
-require 'sinatra'
+require 'sinatra/base'
 require 'sinatra/flash'
 require 'filemagic'
 require 'uri'
 require 'tempfile'
 require 'settingslogic'
 require 'haml'
+require 'tilt/haml'
 require 'rack'
 
 module OmniFiles
